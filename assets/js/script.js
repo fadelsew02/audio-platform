@@ -3,7 +3,7 @@ let audioChunks = [];
 let timerInterval;
 let secondsElapsed = 0;
 let isRecording = false;
-let isPaused = false; // Nouvelle variable pour savoir si l'enregistrement est en pause
+let isPaused = false; 
 
 const recordModal = document.getElementById('recordModal');
 const timerDisplay = document.getElementById('timer');
@@ -33,19 +33,18 @@ async function startRecording() {
             audioPlayback.src = audioURL;
             audioPlayback.style.display = 'block';
             actionButtons.style.display = 'flex';
-            resumeButton.style.display = 'block'; // Afficher le bouton Reprendre après l'arrêt
+            resumeButton.style.display = 'block'; 
         };
 
         mediaRecorder.start();
         isRecording = true;
-        startTimer(); // Lancer le timer au début de l'enregistrement
+        startTimer();
     } catch (err) {
         console.error('Erreur lors de l’accès au micro:', err);
     }
 }
 
 function startTimer() {
-    // Assurez-vous que le timer est lancé une seule fois au début
     if (!timerInterval) {
         timerInterval = setInterval(() => {
             secondsElapsed++;
@@ -57,11 +56,11 @@ function startTimer() {
 function stopRecording() {
     if (mediaRecorder && mediaRecorder.state !== 'inactive') {
         mediaRecorder.stop();
-        clearInterval(timerInterval); // Arrêter le timer lorsque l'enregistrement est arrêté
+        clearInterval(timerInterval); 
     }
     isRecording = false;
-    resumeButton.style.display = 'block'; // Le bouton Reprendre devient visible
-    isPaused = true;  // Marquer comme en pause
+    resumeButton.style.display = 'block'; 
+    isPaused = true;  
 }
 
 function resumeRecording() {
