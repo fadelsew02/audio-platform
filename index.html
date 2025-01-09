@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -10,13 +11,38 @@
   <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet">
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="assets/vendor/aos/aos.css" rel="stylesheet">
   <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
   <link href="assets/css/main.css" rel="stylesheet">
   <style>
+
+.btn-link {
+    background: none;
+    border: none;
+    color: #007bff;
+    text-decoration: none;
+    padding: 0;
+    font-size: 16px;
+  }
+
+  .btn-link:hover {
+    color: #0056b3;
+  }
+
+  #action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .modal-footer.justify-content-center {
+    justify-content: center;
+  }
     .microphone-animation {
       position: relative;
       width: 100px;
@@ -25,6 +51,7 @@
       background: url('assets/img/microphone.png') no-repeat center center;
       background-size: contain;
     }
+
     .microphone-animation::before {
       content: '';
       position: absolute;
@@ -37,11 +64,13 @@
       transform: translate(-50%, -50%) scale(1);
       animation: pulse 1.5s infinite;
     }
+
     @keyframes pulse {
       0% {
         transform: translate(-50%, -50%) scale(1);
         opacity: 1;
       }
+
       100% {
         transform: translate(-50%, -50%) scale(1.5);
         opacity: 0;
@@ -49,30 +78,58 @@
     }
 
     #openModal {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    background-color: rgba(108, 117, 125, 0.5);
-    border: 4px solid rgba(255, 255, 255, 0.8); 
-    position: relative;
-    animation: pulseEffect 1.5s infinite;
-  }
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background-color: rgba(108, 117, 125, 0.5);
+      border: 4px solid rgba(255, 255, 255, 0.8);
+      position: relative;
+      animation: pulseEffect 1.5s infinite;
+    }
 
-  @keyframes pulseEffect {
-    0% {
-      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.6);
+    @keyframes pulseEffect {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.6);
+      }
+
+      70% {
+        box-shadow: 0 0 30px 30px rgba(255, 255, 255, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+      }
     }
-    70% {
-      box-shadow: 0 0 30px 30px rgba(255, 255, 255, 0);
+
+    @media (max-width: 576px) {
+      #openModal {
+        width: 200px;
+        height: 200px;
+      }
+
+      #openModal i {
+        font-size: 70px;
+      }
+
+      #openModal span {
+        font-size: 16px;
+      }
+
+      .microphone-animation {
+        width: 70px;
+        height: 70px;
+      }
+
+      .microphone-animation::before {
+        width: 100px;
+        height: 100px;
+      }
     }
-    100% {
-      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
-    }
-  }
+
 
     #openModal i {
       font-size: 100px;
@@ -103,7 +160,8 @@
       <img src="assets/img/bg.jpg" alt="" data-aos="fade-in">
       <div class="container d-flex flex-column align-items-center text-center">
         <h2 data-aos="fade-up" data-aos-delay="100">Bienvenue sur notre plateforme audio</h2>
-        <p data-aos="fade-up" data-aos-delay="200">Enregistrez votre voix et explorez de nouvelles possibilités avec notre technologie avancée.</p>
+        <p data-aos="fade-up" data-aos-delay="200">Enregistrez votre voix et explorez de nouvelles possibilités avec
+          notre technologie avancée.</p>
         <div data-aos="fade-up" data-aos-delay="300">
           <button id="openModal" type="button" data-bs-toggle="modal" data-bs-target="#recordModal">
             <i class="bi bi-mic"></i>
@@ -116,24 +174,29 @@
 
   <div id="preloader"></div>
 
-  <!-- Modal -->
   <div class="modal fade" id="recordModal" tabindex="-1" aria-labelledby="recordModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="recordModalLabel"></h5>
+          <h5 class="modal-title" id="recordModalLabel">Enregistrement en cours</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body text-center">
           <div class="microphone-animation"></div>
-          <p>L'enregistrement est en cours...</p>
+          <p id="record-status">Temps écoulé : <span id="timer">0</span> secondes</p>
+          <audio id="audio-playback" controls style="display: none; margin-top: 20px; width: 100%; max-width: 400px; margin-left: auto; margin-right: auto; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"></audio>
+          <div id="action-buttons" style="display: none; margin-top: 20px;">
+            <button id="delete-recording" class="btn btn-link">Supprimer</button>
+            <button id="translate-recording" class="btn btn-link">Traduire</button>
+          </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Arrêter</button>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-secondary" id="stop-recording">Arrêter</button>
         </div>
       </div>
     </div>
   </div>
+
 
   <!-- Vendor JS Files -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -143,6 +206,7 @@
   <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
 
   <!-- Main JS File -->
+  <script src="assets/js/script.js"></script>
   <script src="assets/js/main.js"></script>
 
 </body>
