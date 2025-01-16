@@ -1,9 +1,9 @@
+let secondsElapsed = 0;
+let isRecording = false;
+let isPaused = false;
 let mediaRecorder;
 let audioChunks = [];
 let timerInterval;
-let secondsElapsed = 0;
-let isRecording = false;
-let isPaused = false; 
 
 const recordModal = document.getElementById('recordModal');
 const timerDisplay = document.getElementById('timer');
@@ -12,10 +12,12 @@ const actionButtons = document.getElementById('action-buttons');
 const stopButton = document.getElementById('stop-recording');
 const deleteButton = document.getElementById('delete-recording');
 const translateButton = document.getElementById('translate-recording');
-const resumeButton = document.createElement('button'); 
+const resumeButton = document.createElement('button');
+const openModalButton = document.getElementById('openModal');
 
 resumeButton.textContent = 'Continuer';
 resumeButton.classList.add('btn', 'btn-link');
+resumeButton.style.display = 'none';
 actionButtons.appendChild(resumeButton);
 
 async function startRecording() {
@@ -33,7 +35,7 @@ async function startRecording() {
             audioPlayback.src = audioURL;
             audioPlayback.style.display = 'block';
             actionButtons.style.display = 'flex';
-            resumeButton.style.display = 'block'; 
+            resumeButton.style.display = 'block';
         };
 
         mediaRecorder.start();
@@ -56,98 +58,62 @@ function startTimer() {
 function stopRecording() {
     if (mediaRecorder && mediaRecorder.state !== 'inactive') {
         mediaRecorder.stop();
-        clearInterval(timerInterval); 
-    }
-    isRecording = false;
-    resumeButton.style.display = 'block'; 
-    isPaused = true;  
-}
-
-function resumeRecording() {
-    if (!isRecording && isPaused) {
-        // Reprendre l'enregistrement et ne pas redémarrer le timer
-        mediaRecorder.start();
-        isRecording = true;
-        resumeButton.style.display = 'none'; // Cacher le bouton Reprendre
-        isPaused = false;
-
-        // Redémarrer le timer si nécessaire
-        if (!timerInterval) {
-            startTimer();
-        }
+        clearInterval(timerInterval);
+        timerInterval = null;
+        isRecording = false;
+        isPaused = true;
     }
 }
 
-function resetRecording() {
+function deleteRecording() {
     audioChunks = [];
     audioPlayback.src = '';
     audioPlayback.style.display = 'none';
     actionButtons.style.display = 'none';
-    timerDisplay.textContent = '0';
+    resumeButton.style.display = 'none';
     clearInterval(timerInterval);
-    secondsElapsed = 0; // Réinitialiser aussi le temps écoulé
-    isRecording = false;
-    isPaused = false;
-    resumeButton.style.display = 'none'; 
-    // Fermer la modale après la réinitialisation
-    document.getElementById('recordModal').setAttribute('data-bs-dismiss', 'modal');  
-    document.getElementById('recordModal').setAttribute('aria-label', 'Close');  
-    document.getElementById('recordModal').setAttribute('class', 'btn-close');  
-    location.reload();
+    timerInterval = null;
+    secondsElapsed = 0;
+    timerDisplay.textContent = secondsElapsed;
 }
 
-async function translateAudio() {
+async function translateAudio(audioBlob) {
     try {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-        const audioURL = URL.createObjectURL(audioBlob);
-
-        const transcriptionResponse = await fetch('https://api-inference.huggingface.co/models/openai/whisper-large-v3', {
+        const formData = new FormData();
+        formData.append('file', audioBlob, 'audio.wav');
+        console.log(audioBlob)
+        const response = await fetch('https://speech-api-3p64.onrender.com:3001/api/submit', {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${HF_TOKEN}`
-            },
-            body: audioBlob
+            body: formData
         });
 
-        if (!transcriptionResponse.ok) {
-            throw new Error("Erreur lors de la transcription de l'audio");
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
         }
 
-        const transcriptionResult = await transcriptionResponse.json();
-        const transcriptionText = transcriptionResult.text;
-
-        const translationResponse = await fetch('https://api-mymachine-translation.com/translate', { // Remplacez par l'API de traduction que vous utilisez
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                text: transcriptionText,
-                target_language: 'fr' // Choisir la langue cible (par exemple, français)
-            })
-        });
-
-        if (!translationResponse.ok) {
-            throw new Error("Erreur lors de la traduction");
-        }
-
-        const translationResult = await translationResponse.json();
-        const translatedText = translationResult.translated_text;
-
-        // Afficher la traduction à l'utilisateur
-        alert(`Traduction : ${translatedText}`);
+        const result = await response.json();
+        console.log('Transcription result:', result);
+        // Handle the transcription result here (e.g., display it on the page)
     } catch (error) {
-        console.error('Erreur dans le processus de traduction :', error);
-        alert('Une erreur s\'est produite pendant la traduction.');
+        console.error('Error:', error);
     }
 }
 
+resumeButton.addEventListener('click', () => {
+    if (isPaused) {
+        startRecording();
+        isPaused = false;
+        resumeButton.style.display = 'none';
+    }
+});
 
-// Événements de contrôle
-recordModal.addEventListener('shown.bs.modal', startRecording);
 stopButton.addEventListener('click', stopRecording);
-resumeButton.addEventListener('click', resumeRecording);
-deleteButton.addEventListener('click', resetRecording);
-translateButton.addEventListener('click', translateAudio);
-
-
+deleteButton.addEventListener('click', deleteRecording);
+translateButton.addEventListener('click', () => {
+    if (audioChunks.length > 0) {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+        translateAudio(audioBlob);
+    } else {
+        console.error('No audio file to translate.');
+    }
+});
