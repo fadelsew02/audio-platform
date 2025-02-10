@@ -64,11 +64,11 @@ async function startRecording() {
 
 
 function playAudio(event) {
-    const file = event.target.files[0]; 
+    const file = event.target.files[0];
     if (file) {
         const audioPlayer = document.getElementById('audioPlayer');
-        const fileURL = URL.createObjectURL(file); 
-        audioPlayer.src = fileURL; 
+        const fileURL = URL.createObjectURL(file);
+        audioPlayer.src = fileURL;
         document.getElementById('transcribeButton').style.display = 'block';
 
         const transcribeButton = document.getElementById('transcribeButton');
@@ -77,8 +77,6 @@ function playAudio(event) {
         };
     }
 }
-
-
 
 function startTimer() {
     if (!timerInterval) {
@@ -111,19 +109,55 @@ function deleteRecording() {
     timerDisplay.textContent = secondsElapsed;
 }
 
+
+async function translateToGun() {
+    const targetLanguage = "gou";
+    const text = document.getElementById('transcription-text').value;
+
+    if (!text) {
+        alert("Aucun texte disponible pour la traduction.");
+        return;
+    }
+
+    const apiUrl = `http://127.0.0.1:8000/transcriber/api/translate/${targetLanguage}/`;
+    console.log(text)
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ text })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json(); 
+            throw new Error(errorData.error || 'Erreur de traduction');
+        }
+
+        const data = await response.json();
+
+        console.log(data)
+
+        document.getElementById('transcription-text-1').value = data.translation;
+        return data.translation; 
+    } catch (error) {
+        console.error("Erreur lors de la traduction :", error);
+        throw error; 
+    }
+}
+
 async function translateAudio(audioBlob, upload = false) {
     showLoader();
     try {
         const formData = new FormData();
         formData.append('audio', audioBlob, 'audio.wav');
-        console.log(audioBlob)
-        console.log("cc12")
         document.getElementById('about').style.display = 'block';
         document.getElementById('recordedAudio').src = URL.createObjectURL(audioBlob);
         document.getElementById('recordedAudio').style.display = 'block';
         document.getElementById('transcription-text').readOnly = true;
-        if(!upload){
-            // Fermer la modale
+        if (!upload) {
             const modal = document.getElementById('recordModal');
             const modalInstance = bootstrap.Modal.getInstance(modal);
             modalInstance.hide();
@@ -139,13 +173,12 @@ async function translateAudio(audioBlob, upload = false) {
         }
 
         const result = await response.json();
-        console.log('Transcription result:', result);
         document.getElementById('transcription-text').value = result.message;
     } catch (error) {
         console.error('Error:', error);
         document.getElementById('transcription-text').value = result.message;
     } finally {
-        hideLoader(); 
+        hideLoader();
     }
 }
 
@@ -159,14 +192,6 @@ resumeButton.addEventListener('click', () => {
 
 stopButton.addEventListener('click', stopRecording);
 deleteButton.addEventListener('click', deleteRecording);
-// translateButton.addEventListener('click', () => {
-//     if (audioChunks.length > 0) {
-//         const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-//         translateAudio(audioBlob);
-//     } else {
-//         console.error('No audio file to translate.');
-//     }
-// });
 
 translateButton.forEach((element) => {
     element.addEventListener('click', () => {
@@ -179,21 +204,22 @@ translateButton.forEach((element) => {
     });
 })
 
+document.getElementById('translate-icon').addEventListener('click', translateToGun);
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
 
     const modal = document.getElementById('recordModal');
 
     modal.addEventListener('hidden.bs.modal', function () {
-      document.getElementById('about').style.display = 'block'
-      setTimeout(() => {
-        document.getElementById('about').scrollIntoView({ 
-          behavior: 'smooth',
-          block: 'start'
-        });
-      }, 300);
+        document.getElementById('about').style.display = 'block'
+        setTimeout(() => {
+            document.getElementById('about').scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }, 300);
     });
-  });
+});
 
 document.getElementById('edit-icon').addEventListener('click', () => {
     const textarea = document.getElementById('transcription-text');
@@ -205,38 +231,31 @@ document.getElementById('edit-icon').addEventListener('click', () => {
 
 
 
+function playTranscriptionText() {
+    const text = document.getElementById('transcription-text-1').value;
 
+    if (!text) {
+        alert("Aucun texte à lire.");
+        return;
+    }
 
+    const speechSynthesis = window.speechSynthesis;
+    const utterance = new SpeechSynthesisUtterance(text);
 
+    utterance.lang = "fr-FR"; 
+    utterance.pitch = 1; 
+    utterance.rate = 1; 
 
-// document.getElementById('translate-icon').addEventListener('click', translateToGun);
+    speechSynthesis.speak(utterance);
 
-// function translateToGun() {
-//     const textToTranslate = document.getElementById('transcription-text').value;
+    utterance.onend = () => {
+        console.log("Lecture terminée");
+    };
 
-//     if (!textToTranslate) {
-//         alert("Aucun texte disponible pour la traduction.");
-//         return;
-//     }
+    utterance.onerror = (error) => {
+        console.error("Erreur lors de la lecture:", error);
+    };
+}
 
-//     // Simulation d'appel à une API de traduction
-//     console.log("Traduction vers le Gun en cours...");
+document.getElementById('play-transcription-button').addEventListener('click', playTranscriptionText);
 
-//     fetch('http://127.0.0.1:8000/transcriber/api/translate-to-gun/', {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({ text: textToTranslate })
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         if (data.translatedText) {
-//             document.getElementById('transcription-text').value = data.translatedText;
-//         } else {
-//             alert("Erreur de traduction.");
-//         }
-//     })
-//     .catch(error => {
-//         console.error('Erreur de traduction:', error);
-//         alert("Impossible de traduire pour le moment.");
-//     });
-// }
